@@ -22,6 +22,10 @@ import com.badlogic.gdx.math.Vector2;
 	        Gdx.input.setInputProcessor(im);
 	    }
 	    
+	    /*public Vector2 getLastTouch(){
+	    	return new Vector2(x*(960.0f/Gdx.graphics.getWidth()))
+	    }*/
+	    
 	    @Override
 	    public boolean touchDown(float x, float y, int pointer, int button) {
 	    	this.x = x;
