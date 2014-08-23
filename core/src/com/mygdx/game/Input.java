@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import javafx.util.Pair;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -11,7 +13,10 @@ import com.badlogic.gdx.math.Vector2;
 	    
 	    private String message = "No gesture performed yet";
 	    public float x, y;
-
+	    public boolean left = false;
+	    public boolean right = false;
+	    public int leftP = 0;
+	    public int rightP = 0;
 	    public Input(){
 	    	x=0;
 	    	y=0;
@@ -31,10 +36,34 @@ import com.badlogic.gdx.math.Vector2;
 	    	this.x = x;
 	    	this.y = y;
 	        message = "Touch down!";
+	        
+	        
+	        if(rightP == pointer && x > Gdx.graphics.getWidth()/2){
+	        	right = true;
+	        	rightP = pointer;
+	        }
+	        if(leftP == pointer && x < Gdx.graphics.getWidth()/2){
+	        	left = true;
+	        	leftP = pointer;
+	        }
+	        
 	        Gdx.app.log("INFO", message);
 	        return true;
 	    }
 
+	    @Override
+	    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+	        message = "TOUCH ENDED"+screenX+" "+screenY+" "+Gdx.graphics.getWidth();
+	        if(rightP == pointer && screenX > Gdx.graphics.getWidth()/2){
+	        	right = false;
+	        }
+	        if(leftP == pointer && screenX < Gdx.graphics.getWidth()/2){
+	        	left = false;
+	        }
+	        Gdx.app.log("INFO", message);
+	        return false;
+	    }
+	    
 	    @Override
 	    public boolean tap(float x, float y, int count, int button) {
 	        message = "Tap performed, finger" + Integer.toString(button);
@@ -105,18 +134,14 @@ import com.badlogic.gdx.math.Vector2;
 
 	    @Override
 	    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-	        message = "Touch Down";
+	    	
+	        message = "TOUCH STARTED "+screenX+" "+screenY;
 	        Gdx.app.log("INFO", message);
 
 	        return false;
 	    }
 
-	    @Override
-	    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-	        message = "Touch up";
-	        Gdx.app.log("INFO", message);
-	        return false;
-	    }
+	    
 
 	    @Override
 	    public boolean touchDragged(int screenX, int screenY, int pointer) {

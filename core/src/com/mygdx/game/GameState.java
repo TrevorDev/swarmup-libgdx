@@ -16,6 +16,7 @@ public class GameState {
 	static Stage stage;
 	static SpriteBatch batch;
 	static Input input = new Input();
+	static Player player = new Player();
 	static ArrayList<Character> characters = new ArrayList<Character>();
 	static FPSLogger fpsLogger = new FPSLogger();
 	public static void init(){
@@ -24,7 +25,7 @@ public class GameState {
 		stage.getCamera().position.x=0;
 		stage.getCamera().position.y=0;
 		stage.getCamera().update();
-		for(int i=0;i<100;i++){
+		for(int i=0;i<20;i++){
 			Character c = new Character();
 			c.pos.x = i*50;
 			c.pos.y = 0;
@@ -70,6 +71,16 @@ public class GameState {
 			//Character x = (new Character());
 			//batch.draw(x.sprite,0,0);
 		}
+		if(input.left){
+			player.spd.x-=0.1;
+		}
+		
+		if(input.right){
+			player.spd.x+=0.1;
+		}
+		
+		player.move();
+		player.draw(batch);
 		batch.end();
 		fpsLogger.log();
 	}
