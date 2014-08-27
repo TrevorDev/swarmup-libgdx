@@ -1,15 +1,10 @@
 package com.mygdx.game;
 
-import javafx.util.Pair;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.input.GestureDetector.GestureListener;
-import com.badlogic.gdx.math.Vector2;
 
-	public class Input implements GestureListener, InputProcessor {
+	public class Input implements InputProcessor {
 	    
 	    private String message = "No gesture performed yet";
 	    public float x, y;
@@ -21,28 +16,21 @@ import com.badlogic.gdx.math.Vector2;
 	    	x=0;
 	    	y=0;
 	    	InputMultiplexer im = new InputMultiplexer();
-	        GestureDetector gd = new GestureDetector(this);
-	        im.addProcessor(gd);
 	        im.addProcessor(this);
 	        Gdx.input.setInputProcessor(im);
 	    }
 	    
-	    /*public Vector2 getLastTouch(){
-	    	return new Vector2(x*(960.0f/Gdx.graphics.getWidth()))
-	    }*/
-	    
 	    @Override
-	    public boolean touchDown(float x, float y, int pointer, int button) {
-	    	this.x = x;
-	    	this.y = y;
-	        message = "Touch down!";
+	    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+	    	this.x = screenX;
+	    	this.y = screenY;
+	        message = "TOUCH STARTED    " + pointer+"  "+x+"  "+Gdx.graphics.getWidth()/2;
 	        
-	        
-	        if(rightP == pointer && x > Gdx.graphics.getWidth()/2){
+	        if(x > Gdx.graphics.getWidth()/2){
 	        	right = true;
 	        	rightP = pointer;
 	        }
-	        if(leftP == pointer && x < Gdx.graphics.getWidth()/2){
+	        if(x < Gdx.graphics.getWidth()/2){
 	        	left = true;
 	        	leftP = pointer;
 	        }
@@ -53,63 +41,18 @@ import com.badlogic.gdx.math.Vector2;
 
 	    @Override
 	    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-	        message = "TOUCH ENDED"+screenX+" "+screenY+" "+Gdx.graphics.getWidth();
-	        if(rightP == pointer && screenX > Gdx.graphics.getWidth()/2){
+	        message = "TOUCH ENDED  "+pointer;
+	        if(rightP == pointer){
 	        	right = false;
 	        }
-	        if(leftP == pointer && screenX < Gdx.graphics.getWidth()/2){
+	        if(leftP == pointer){
 	        	left = false;
 	        }
 	        Gdx.app.log("INFO", message);
 	        return false;
 	    }
 	    
-	    @Override
-	    public boolean tap(float x, float y, int count, int button) {
-	        message = "Tap performed, finger" + Integer.toString(button);
-	        Gdx.app.log("INFO", message);
-	        return false;
-	    }
-
-	    @Override
-	    public boolean longPress(float x, float y) {
-	        message = "Long press performed";
-	        Gdx.app.log("INFO", message);
-	        return true;
-	    }
-
-	    @Override
-	    public boolean fling(float velocityX, float velocityY, int button) {
-	        message = "Fling performed, velocity:" + Float.toString(velocityX) +
-	                "," + Float.toString(velocityY);
-	        Gdx.app.log("INFO", message);
-	        return true;
-	    }
-
-	    @Override
-	    public boolean pan(float x, float y, float deltaX, float deltaY) {
-	        message = "Pan performed, delta:" + Float.toString(deltaX) +
-	                "," + Float.toString(deltaY);
-	        Gdx.app.log("INFO", message);
-	        return true;
-	    }
-
-	    @Override
-	    public boolean zoom(float initialDistance, float distance) {
-	        message = "Zoom performed, initial Distance:" + Float.toString(initialDistance) +
-	                " Distance: " + Float.toString(distance);
-	        Gdx.app.log("INFO", message);
-	        return true;
-	    }
-
-	    @Override
-	    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-	            Vector2 pointer1, Vector2 pointer2) {
-	        message = "Pinch performed";
-	        Gdx.app.log("INFO", message);
-
-	        return true;
-	    }
+	    
 
 	    @Override
 	    public boolean keyDown(int keycode) {
@@ -130,15 +73,6 @@ import com.badlogic.gdx.math.Vector2;
 	        message = "Key typed";
 	        Gdx.app.log("INFO", message);
 	        return true;
-	    }
-
-	    @Override
-	    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-	    	
-	        message = "TOUCH STARTED "+screenX+" "+screenY;
-	        Gdx.app.log("INFO", message);
-
-	        return false;
 	    }
 
 	    
@@ -163,12 +97,6 @@ import com.badlogic.gdx.math.Vector2;
 	        Gdx.app.log("INFO", message);
 	        return false;
 	    }
-
-		@Override
-		public boolean panStop(float x, float y, int pointer, int button) {
-			// TODO Auto-generated method stub
-			return false;
-		}
 
 	}
 

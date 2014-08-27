@@ -11,8 +11,9 @@ public class DisplayObject extends Rectangle {
 	public Vector2 spd = new Vector2(0,0);
 	public Sprite sprite;
 	
-	public DisplayObject(Texture t){
+	public DisplayObject(Vector2 dim, Texture t){
 		sprite = new Sprite(t);
+		this.dim.set(dim);
 	}
 	
 	

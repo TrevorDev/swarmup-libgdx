@@ -3,9 +3,9 @@ package com.mygdx.game;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,18 +13,52 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 public class GameState {
-	static Stage stage;
-	static SpriteBatch batch;
-	static Input input = new Input();
-	static Player player = new Player();
-	static ArrayList<Character> characters = new ArrayList<Character>();
-	static FPSLogger fpsLogger = new FPSLogger();
-	public static void init(){
+	static Preferences state = Gdx.app.getPreferences("game");
+	static GameState current;
+	int highScore = 0;
+	int score = 0;
+	Stage stage;
+	SpriteBatch batch;
+	Input input = new Input();
+	Player player = new Player();
+	Background bg;
+	ArrayList<Character> characters = new ArrayList<Character>();
+	ArrayList<Wall> walls = new ArrayList<Wall>();
+	ArrayList<DisplayObject> badGuys = new ArrayList<DisplayObject>();
+	ArrayList<DisplayObject> coins = new ArrayList<DisplayObject>();
+	Text scoreDisp = new Text("Score: ", "0");
+	Text highScoreDisp = new Text("Record: ", "0");
+	FPSLogger fpsLogger = new FPSLogger();
+	public void init(){
 		batch = new SpriteBatch();
 		stage = new Stage(new StretchViewport(960, 540));
 		stage.getCamera().position.x=0;
 		stage.getCamera().position.y=0;
 		stage.getCamera().update();
+		
+		float wallWid = 30;
+		walls.add(new Wall(-stage.getViewport().getWorldWidth()/2,-stage.getViewport().getWorldHeight()/2,stage.getViewport().getWorldWidth(),wallWid));
+		walls.add(new Wall(-stage.getViewport().getWorldWidth()/2,stage.getViewport().getWorldHeight()/2,stage.getViewport().getWorldWidth(),wallWid));
+		
+		walls.add(new Wall(-stage.getViewport().getWorldWidth()/2-wallWid,-stage.getViewport().getWorldHeight()/2,wallWid,stage.getViewport().getWorldHeight()));
+		walls.add(new Wall(stage.getViewport().getWorldWidth()/2,-stage.getViewport().getWorldHeight()/2,wallWid,stage.getViewport().getWorldHeight()));
+		
+		walls.add(new Wall(-stage.getViewport().getWorldWidth()/4,-150,stage.getViewport().getWorldWidth()/2,wallWid));
+		walls.add(new Wall(-stage.getViewport().getWorldWidth()/4+400,0,stage.getViewport().getWorldWidth()/2,wallWid));
+		walls.add(new Wall(-stage.getViewport().getWorldWidth()/4-400,0,stage.getViewport().getWorldWidth()/2,wallWid));
+		walls.add(new Wall(-stage.getViewport().getWorldWidth()/4,150,stage.getViewport().getWorldWidth()/2,wallWid));
+		
+		bg = new Background();
+		//coins.add(new Coin());
+		badGuys.add(new FlyFace());
+		badGuys.add(new WalkFace());
+		
+		
+		scoreDisp.pos.set(-stage.getViewport().getWorldWidth()/2+3, -stage.getViewport().getWorldHeight()/2+20);
+		highScore = GameState.state.getInteger("highScore", 0);
+		highScoreDisp.pos.set(-stage.getViewport().getWorldWidth()/2+400, -stage.getViewport().getWorldHeight()/2+20);
+		highScoreDisp.update(highScore+"");
+		
 		for(int i=0;i<20;i++){
 			Character c = new Character();
 			c.pos.x = i*50;
@@ -33,7 +67,7 @@ public class GameState {
 		}
 	}
 	
-	public static void render(){
+	public void render(){
 		//stage.getCamera().position.x++;
 		//stage.getCamera().update();
 		batch.setProjectionMatrix(stage.getCamera().combined);
@@ -41,46 +75,30 @@ public class GameState {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		//s.draw(batch);
 		batch.begin();
-		for(int i = 0;i<characters.size();i++){
-			Character c = characters.get(i);
-			Vector2 lt = getLastTouch();
-			float dist = c.pos.dst(lt);
-			if(dist<50){
-				c.spd.scl(0.9f);
-			}
-			c.spd.x-=dist*(c.pos.x - lt.x)*0.00001f;
-			c.spd.y-=dist*(c.pos.y - lt.y)*0.00001f;
-			
-			for(int j = 0;j<characters.size();j++){
-				if(i!=j){
-					Character c2 = characters.get(j);
-					float collideDist = c.pos.dst(c2.pos);
-					if(collideDist < (c.size/2) + (c2.size/2)){
-						c.spd.x -= (c2.pos.x - c.pos.x)/collideDist;
-						c.spd.y -= (c2.pos.y - c.pos.y)/collideDist;
-					}
-				}
-			}
-			
+		bg.draw(batch);
+		for(Character c : characters){
 			c.move();
-			//c.pos.x=lt.x;
-			//c.pos.y=lt.y;
-			//System.out.println(c.pos.x+"   "+i);
 			c.draw(batch);
-			//batch.draw(c.sprite, c.pos.x, c.pos.y);
-			//Character x = (new Character());
-			//batch.draw(x.sprite,0,0);
-		}
-		if(input.left){
-			player.spd.x-=0.1;
-		}
-		
-		if(input.right){
-			player.spd.x+=0.1;
 		}
 		
 		player.move();
 		player.draw(batch);
+		
+		for(Wall w:walls){
+			w.draw(batch);
+		}
+		
+		for(DisplayObject w:coins){
+			w.move();
+			w.draw(batch);
+		}
+		
+		for(DisplayObject w:badGuys){
+			w.move();
+			w.draw(batch);
+		}
+		scoreDisp.draw(batch);
+		highScoreDisp.draw(batch);
 		batch.end();
 		fpsLogger.log();
 	}
@@ -88,13 +106,18 @@ public class GameState {
 	public static Vector2 getLastTouch(){
 		float x,y;
 		//map touch to screen
-		x=input.x*(stage.getViewport().getWorldWidth()/Gdx.graphics.getWidth())-(stage.getViewport().getWorldWidth()/2);
-		y=(-input.y)*(stage.getViewport().getWorldHeight()/Gdx.graphics.getHeight())+(stage.getViewport().getWorldHeight()/2);
+		x=current.input.x*(current.stage.getViewport().getWorldWidth()/Gdx.graphics.getWidth())-(current.stage.getViewport().getWorldWidth()/2);
+		y=(-current.input.y)*(current.stage.getViewport().getWorldHeight()/Gdx.graphics.getHeight())+(current.stage.getViewport().getWorldHeight()/2);
 		
 		//map touch to camera coord
-		x+=stage.getCamera().position.x;
-		y+=stage.getCamera().position.y;
+		x+=current.stage.getCamera().position.x;
+		y+=current.stage.getCamera().position.y;
 		//System.out.println(x+"  "+ y);
 		return new Vector2(x, y);	
+	}
+	
+	public static void newGameState(){
+		current = new GameState();
+		current.init();
 	}
 }
