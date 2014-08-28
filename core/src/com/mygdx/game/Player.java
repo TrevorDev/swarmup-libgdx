@@ -15,7 +15,7 @@ public class Player extends DisplayObject {
 	int jumps = maxJumps;
 	boolean grounded = false;
 	public Player(){
-		super(new Vector2(40,40), new Texture("alt/player.png"));
+		super(new Vector2(40,40), new Texture("player.png"));
 	}
 	
 	@Override

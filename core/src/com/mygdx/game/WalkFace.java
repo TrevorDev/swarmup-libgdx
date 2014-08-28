@@ -8,7 +8,7 @@ public class WalkFace extends DisplayObject {
 	float runAcc = 1f;
 	float gravity = 0.65f;
 	public WalkFace(){
-		this(1);
+		this(Math.random() < 0.5 ? 1 : -1);
 	}
 	
 	public WalkFace(int move){
