@@ -1,5 +1,6 @@
 package com.mygdx.game.android;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 
@@ -8,7 +9,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.mygdx.game.Swarmup;
 
 public class AndroidLauncher extends AndroidApplication {
-	@Override
+	@SuppressLint("NewApi") @Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
@@ -26,7 +27,7 @@ public class AndroidLauncher extends AndroidApplication {
 		initialize(new Swarmup(), config);
 	}
 	
-	@Override
+	@SuppressLint("NewApi") @Override
 	protected void onResume () {
 		super.onResume();
 		try{

@@ -73,13 +73,6 @@ public class GameState {
 		highScore = GameState.state.getInteger("highScore", 0);
 		highScoreDisp.pos.set(-stage.getViewport().getWorldWidth()/2+400, -stage.getViewport().getWorldHeight()/2+20);
 		highScoreDisp.update(highScore+"");
-		
-		for(int i=0;i<20;i++){
-			Character c = new Character();
-			c.pos.x = i*50;
-			c.pos.y = 0;
-			characters.add(c);
-		}
 	}
 	
 	public void render(){
@@ -99,10 +92,6 @@ public class GameState {
 		
 		batch.begin();
 		bg.draw(batch);
-		for(Character c : characters){
-			c.move();
-			c.draw(batch);
-		}
 		
 		player.move();
 		player.draw(batch);
@@ -141,7 +130,21 @@ public class GameState {
 		return new Vector2(x, y);	
 	}
 	
+	public void restart(){
+		badGuys = new ArrayList<DisplayObject>();
+		badGuys.add(new FlyFace());
+		badGuys.add(new WalkFace());
+		score = 0;
+		scoreDisp.update(0+"");
+		player.pos.set(0,0);
+		player.spd.set(0,0);
+	}
+	
 	public static void newGameState(){
+		if(current != null){
+			current.stage.dispose();
+			current.batch.dispose();
+		}
 		current = new GameState();
 		current.init();
 	}

@@ -115,11 +115,16 @@ public class Player extends DisplayObject {
 				GameState.current.scoreDisp.update((Integer.parseInt(GameState.current.scoreDisp.post)+1)+"");
 			}
 		}
+		boolean dead = false;
 		for(DisplayObject w:GameState.current.badGuys){
 			if(this.collidesWith(w)){
 				BoomBox.hit.play();
-				GameState.newGameState();
+				dead = true;
 			}
+		}
+		if(dead){
+			GameState.current.restart();
+			//GameState.newGameState();
 		}
     }
 }
