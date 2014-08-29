@@ -22,6 +22,7 @@ import com.badlogic.gdx.InputProcessor;
 	    
 	    @Override
 	    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+	    	GameState.menu = null;
 	    	this.x = screenX;
 	    	this.y = screenY;
 	        message = "TOUCH STARTED    " + pointer+"  "+x+"  "+Gdx.graphics.getWidth()/2;

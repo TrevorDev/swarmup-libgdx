@@ -4,17 +4,29 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 public class GameState {
 	static Preferences state = Gdx.app.getPreferences("game");
 	static GameState current;
+	static Background menu;
+	static boolean started = false;
 	int highScore = 0;
 	int score = 0;
 	Stage stage;
@@ -35,7 +47,6 @@ public class GameState {
 		stage.getCamera().position.x=0;
 		stage.getCamera().position.y=0;
 		stage.getCamera().update();
-		
 		float wallWid = 30;
 		walls.add(new Wall(-stage.getViewport().getWorldWidth()/2,-stage.getViewport().getWorldHeight()/2,stage.getViewport().getWorldWidth(),wallWid));
 		walls.add(new Wall(-stage.getViewport().getWorldWidth()/2,stage.getViewport().getWorldHeight()/2,stage.getViewport().getWorldWidth(),wallWid));
@@ -49,6 +60,10 @@ public class GameState {
 		walls.add(new Wall(-stage.getViewport().getWorldWidth()/4,150,stage.getViewport().getWorldWidth()/2,wallWid));
 		
 		bg = new Background();
+		if(!GameState.started){
+			GameState.started = true;
+			menu = new Background("main2.png");
+		}
 		//coins.add(new Coin());
 		badGuys.add(new FlyFace());
 		badGuys.add(new WalkFace());
@@ -74,6 +89,14 @@ public class GameState {
 		//Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		//s.draw(batch);
+		
+		if(menu != null){
+			batch.begin();
+			menu.draw(batch);
+			batch.end();
+			return;
+		}
+		
 		batch.begin();
 		bg.draw(batch);
 		for(Character c : characters){
@@ -100,6 +123,8 @@ public class GameState {
 		scoreDisp.draw(batch);
 		highScoreDisp.draw(batch);
 		batch.end();
+		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		stage.draw();
 		fpsLogger.log();
 	}
 	
